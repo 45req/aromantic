@@ -1,15 +1,25 @@
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).send({ message: 'Only POST allowed' });
+import fetch from 'node-fetch';
+
+export async function handler(event, context) {
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ message: 'Only POST allowed' }),
+    };
   }
 
-  const { query } = req.body;
+  const body = JSON.parse(event.body || '{}');
+  const query = body.query;
 
   if (!query) {
-    return res.status(400).send({ message: 'Missing query' });
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: 'Missing query' }),
+    };
   }
 
-  const webhookUrl = 'https://discord.com/api/webhooks/1386027994556141618/dzvAPcOU_ALxasTPSVgdB3I4Qaag00GZyhPW-63knER_y77IT4KKUqHmDJwcDHzcP2jz';
+  const webhookUrl = "https://discord.com/api/webhooks/1386027994556141618/dzvAPcOU_ALxasTPSVgdB3I4Qaag00GZyhPW-63knER_y77IT4KKUqHmDJwcDHzcP2jz'; // Twój webhook
+
   const payload = {
     embeds: [
       {
@@ -23,18 +33,25 @@ export default async function handler(req, res) {
   try {
     const response = await fetch(webhookUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
-      throw new Error(`Discord responded with ${response.status}`);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: `Discord error: ${response.status}` }),
+      };
     }
 
-    return res.status(200).json({ message: 'Sent!' });
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ message: 'Sent!' }),
+    };
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: error.message || 'Unknown error' }),
+    };
   }
 }
