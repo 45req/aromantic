@@ -1,6 +1,6 @@
-import fetch from 'node-fetch';
+const fetch = require('node-fetch');
 
-export async function handler(event, context) {
+exports.handler = async function(event, context) {
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
@@ -8,7 +8,16 @@ export async function handler(event, context) {
     };
   }
 
-  const body = JSON.parse(event.body || '{}');
+  let body;
+  try {
+    body = JSON.parse(event.body || '{}');
+  } catch {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: 'Invalid JSON' }),
+    };
+  }
+
   const query = body.query;
 
   if (!query) {
@@ -18,7 +27,7 @@ export async function handler(event, context) {
     };
   }
 
-  const webhookUrl = "https://discord.com/api/webhooks/1386027994556141618/dzvAPcOU_ALxasTPSVgdB3I4Qaag00GZyhPW-63knER_y77IT4KKUqHmDJwcDHzcP2jz'; // Twój webhook
+  const webhookUrl = 'https://discord.com/api/webhooks/1386027994556141618/dzvAPcOU_ALxasTPSVgdB3I4Qaag00GZyhPW-63knER_y77IT4KKUqHmDJwcDHzcP2jz';
 
   const payload = {
     embeds: [
@@ -54,4 +63,4 @@ export async function handler(event, context) {
       body: JSON.stringify({ error: error.message || 'Unknown error' }),
     };
   }
-}
+};
