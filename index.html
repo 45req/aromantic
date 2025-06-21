@@ -111,40 +111,41 @@
 
   <script>
     const form = document.getElementById('searchForm');
-    const resultsDiv = document.getElementById('results');
-    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+const resultsDiv = document.getElementById('results');
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    form.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const query = document.getElementById('query').value.trim();
+form.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const query = document.getElementById('query').value.trim();
 
-      if (!query || !emailRegex.test(query)) {
-        resultsDiv.innerHTML = '<p class="text-yellow-400 font-medium">Please enter a valid email address.</p>';
-        return;
-      }
+  if (!query || !emailRegex.test(query)) {
+    resultsDiv.innerHTML = '<p class="text-yellow-400 font-medium">Please enter a valid email address.</p>';
+    return;
+  }
 
-      resultsDiv.innerHTML = '<p class="text-blue-400 font-medium">Searching... <span class="animate-pulse">🔍</span></p>';
+  resultsDiv.innerHTML = '<p class="text-blue-400 font-medium">Searching... <span class="animate-pulse">🔍</span></p>';
 
-      try {
-        const response = await fetch('/.netlify/functions/submit', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ query })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          resultsDiv.innerHTML = `<p class="text-green-400 font-medium">Query sent successfully: <strong>${query}</strong></p>`;
-        } else {
-          resultsDiv.innerHTML = `<p class="text-red-400 font-medium">Error: ${data.error || 'Unknown error'}</p>`;
-        }
-      } catch (error) {
-        resultsDiv.innerHTML = `<p class="text-red-400 font-medium">Network error: ${error.message}</p>`;
-      }
+  try {
+    const response = await fetch('/.netlify/functions/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ query })
     });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      resultsDiv.innerHTML = `<p class="text-green-400 font-medium">Query sent successfully: <strong>${query}</strong></p>`;
+    } else {
+      resultsDiv.innerHTML = `<p class="text-red-400 font-medium">Error: ${data.error || 'Unknown error'}</p>`;
+    }
+  } catch (error) {
+    resultsDiv.innerHTML = `<p class="text-red-400 font-medium">Network error: ${error.message}</p>`;
+  }
+});
+
   </script>
 </body>
 </html>
