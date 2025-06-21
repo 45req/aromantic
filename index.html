@@ -126,7 +126,7 @@ form.addEventListener('submit', async function(e) {
   resultsDiv.innerHTML = '<p class="text-blue-400 font-medium">Searching... <span class="animate-pulse">🔍</span></p>';
 
   try {
-    const response = await fetch('/.netlify/functions/submit', {
+    const response = await fetch('/.netlify/functions/submit.js', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
